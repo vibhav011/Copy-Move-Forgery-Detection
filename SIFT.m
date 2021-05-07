@@ -35,9 +35,9 @@ end
 temp_img=kron(img,ones(2)); % replace every 1 pixel by 4 pixels of the same intensity 
 temp_img=padarray(temp_img,[1,1],'replicate'); % pad all sides by intensities that are the same as the border intensities kust beisde these padding pixels
 % temp_img has dimensions (2*row+2,2*col+2)
-figure(2)
-subplot(2,2,1);
-imshow(origin) % displaying the original image in the second sub-figure, this will be marked by the extracted key-points in subsequent steps 
+%figure(2)
+%subplot(2,2,1);
+%imshow(origin) % displaying the original image in the second sub-figure, this will be marked by the extracted key-points in subsequent steps 
 % filling all the levels of all the octaves of the Difference of Gaussian
 % map in the following nested loop
 for i=1:octave
@@ -54,8 +54,8 @@ for i=1:octave
         % the last level of an octave is retained as temp_img to serve as
         % the base scale of the next octave
         p=(level)*(i-1);
-        figure(1);
-        subplot(octave,level,p+j);
+        %figure(1);
+        %subplot(octave,level,p+j);
         f=fspecial('gaussian',[1,floor(6*scale)],scale);  % f is the gaussian filter that we will apply on the image, the size 
         % and standard deviation vaues for the filter have been mentioned     
         
@@ -74,7 +74,7 @@ for i=1:octave
             % we remove the padding here to be able to sample this image
             % differently for the next octave
         end
-        imshow(uint8(255 * mat2gray(temp_D(:,:,j)))); % displaying the j^{th} level in the i^{th} octave
+        %imshow(uint8(255 * mat2gray(temp_D(:,:,j)))); % displaying the j^{th} level in the i^{th} octave
     end
     D{i}=temp_D;
     L1=L1(1:2:end,1:2:end); % redcing the sampling frequency for higher scale valued octaves 
@@ -162,11 +162,11 @@ ry=y./2.^(octave-1-extrema(1,:));
 rx=x./2.^(octave-1-extrema(1,:));
 
 % displaying the preliminary extrema caluculated in the first sub-figure of figure 2
-figure(2)
-subplot(2,2,2);
-imshow(origin)
-hold on
-plot(ry,rx,'r+');
+%figure(2)
+%subplot(2,2,2);
+%imshow(origin)
+%hold on
+%plot(ry,rx,'r+');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -218,11 +218,11 @@ ry=y./2.^(octave-1-extrema(1,:));
 rx=x./2.^(octave-1-extrema(1,:));
 
 % displaying the preliminary extrema caluculated in figure 2
-figure(2)
-subplot(2,2,3);
-imshow(origin)
-hold on
-plot(ry,rx,'g+');
+%figure(2)
+%subplot(2,2,3);
+%imshow(origin)
+%hold on
+%plot(ry,rx,'g+');
 
 cntr=0;
 for i=1:ext_num
@@ -254,11 +254,11 @@ ry=y./2.^(octave-1-extrema(1,:));
 rx=x./2.^(octave-1-extrema(1,:));
 
 % displaying the preliminary extrema caluculated in figure 2
-figure(2)
-subplot(2,2,4);
-imshow(origin)
-hold on
-plot(ry,rx,'g+');
+%figure(2)
+%subplot(2,2,4);
+%imshow(origin)
+%hold on
+%plot(ry,rx,'g+');
 toc
 
 
