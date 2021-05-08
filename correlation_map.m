@@ -1,44 +1,27 @@
-function [mapf,mapb] = correlation_map(img)
-
+function [map] = correlation_map(img,threshold)
 [row,col]=size(img);
-
-mapf=zeros(row,col);
-mapb=zeros(row,col);
-
-img2=tranform(img);
-img3=inv_transform(img);
-img1=padarray(img,[2,2],'replicate');
-img2=padarray(img2,[2,2],'replicate');
-img3=padarray(img3,[2,2],'replicate');
-
-for i=3:row+2
-    for j=3:col+2
-        patch1=img1(i-2:i+2,j-2:j+2);
-        patch2=img2(i-2:i+2,j-2:j+2);
-        patch3=img3(i-2:i+2,j-2,j+2);
-        
-        sum1=sum(patch1.*patch1);
-        sum2=sum(patch2.*patch2);
-        sum3=sum(patch3.*patch3);
-        
-        numf=0;
-        numb=0;
-        
-        for i1=1:5
-            for j1=1:5
-                for i2=1:5
-                    for j2=1:5
-                        numf=numf+patch1(i1,j1)*patch2(i2,j2);
-                        numb=numb+patch1(i1,j1)*patch3(i2,j2);
-                    end
-                end
+map=zeros(row,col);
+img=padarray(img,[2,2],'replicate');
+for x=3:row+2
+    for y=3:col+2  
+        num=0;
+        den1=0;
+        den2=0;
+        for dx=-2:2
+            for dy=-2:2
+                [tx,ty]=transform(x+dx,y+dy); % threshold returns the affine transoformed pixel location as a 2-tuple
+                num=num+img(x+dx,y+dy)*img(tx,ty);
+                den1=den1+img(x+dx,y+dy)*img(x+dx,y+dy);
+                den2=den2+img(tx,ty)*img(tx,ty);
             end
         end
-        
-        mapf(i,j)=numf/(sum1*sum2);
-        mapb(i,j)=numb/(sum1*sum3);
-        
+        den=sqrt(den1*den2);
+        corr=num/den;
+        if(corr>=threshold)
+            map(x,y)=1;
+            [tx,ty]=transform(x,y);
+            map(tx,ty)=1;
+        end
     end
 end
-
 end
