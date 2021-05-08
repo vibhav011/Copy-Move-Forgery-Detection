@@ -1,49 +1,42 @@
 function [T, x0, inliers] = ransac(matches, N, k, beta)
     T = zeros(2, 2);
+    A = zeros(k, 2);
+    B = zeros(k, 2);
     x0 = zeros(2, 1);
+    x1 = zeros(2, 1);
+    x2 = zeros(2, 1);
     best_matched = 0;
-    n = size(matches);
+    n = size(matches,1);
     
     for i = 1:N
         ids = randsample(n, k);
-        sum1 = zeros(2, 2);
-        sum2 = zeros(2, 2);
-        sum3 = zeros(2, 1);
-        sum4 = zeros(2, 1);
-        cur_T = T;
-        cur_x0 = x0;
-        error = 0;
         
-        for j = 1:k
-            sum1 = sum1 + matches(ids(j), 1) * matches(ids(j), 2)';
-            sum2 = sum2 + matches(ids(j), 2) * matches(ids(j), 2)';
-            sum3 = sum3 + matches(ids(j), 2)';
-            sum4 = sum4 + matches(ids(j), 1);
-            error = error + norm(matches(ids(j), 1) - cur_T*matches(ids(j), 2) - cur_x0)^2;
-        end
+        A(:,:) = matches(ids, 1, :);
+        B(:,:) = matches(ids, 2, :);
+        muA = mean(A, 1);
+        muB = mean(B, 1);
         
-        while error > 0.1
-            cur_T = (sum1 - cur_x0*sum3) / sum2;
-            cur_x0 = (sum4 - cur_T*sum3') ./ k;
-            
-            error = 0;
-            for j = 1:k
-                error = error + norm(matches(ids(j), 1) - cur_T*matches(ids(j), 2) - cur_x0)^2;
-            end
-        end
+        A = A - muA;
+        B = B - muB;
+        
+        cur_T = (B' * B) \ (B' * A);
+        cur_x0 = muA' - cur_T * muB';
         
         num_inliers = 0;
-        cur_inliers = [];
+        cur_inliers = zeros(n, 2, 2);
         for i2 = 1:n
-            if norm(matches(i2, 1) - cur_T*matches(i2, 2) - cur_x0) < beta
-                cur_inliers = [cur_inliers [matches(i2, 1) matches(i2, 2)]];
+            x1(:,:) = matches(i2, 1, :);
+            x2(:,:) = matches(i2, 2, :);
+            if norm(x1 - cur_T*x2 - cur_x0) < beta
                 num_inliers = num_inliers + 1;
+                cur_inliers(num_inliers, 1, :) = matches(i2, 1, :);
+                cur_inliers(num_inliers, 2, :) = matches(i2, 2, :);
             end
         end
         
         if num_inliers > best_matched
             best_matched = num_inliers;
-            inliers = cur_inliers;
+            inliers = cur_inliers(1:num_inliers, :, :);
             T = cur_T;
             x0 = cur_x0;
         end

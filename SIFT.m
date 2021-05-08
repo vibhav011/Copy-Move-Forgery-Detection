@@ -1,18 +1,17 @@
-function [ext_positions,feature] = SIFT(img)
+function [ext_positions,feature] = SIFT(img, row, colum)
 
 %% Pre-processing
 %%initial image
-tic
+% tic
 %img=imread("monkey.jpeg");
-row=256;
-colum=256;
-img=imresize(img,[row,colum]);
-img=rgb2gray(img);
+
+% img=imresize(img,[row,colum]);
+% img=rgb2gray(img);
 % img=histeq(img);
-img=im2double(img);
-origin=img;
+% img=im2double(img);
+% origin=img;
 % img=medfilt2(img);
-toc
+% toc
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -450,7 +449,7 @@ for i=1:ext_num
 end
 index=find(sum(feature));
 feature=feature(:,index);
-ext_positions=ext_positions(:,index);
+ext_positions=round((ext_positions(:,index) - 1)./2);
 toc
 
 end
