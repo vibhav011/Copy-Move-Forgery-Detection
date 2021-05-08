@@ -3,7 +3,7 @@ close all;
 
 H=256;
 W=256;
-img_orig=imread('im9_t.bmp');
+img_orig=imread('im1_t.bmp');
 [H_orig, W_orig, ~] = size(img_orig);
 img = imresize(img_orig,[H,W]);
 img = im2double(rgb2gray(img));
