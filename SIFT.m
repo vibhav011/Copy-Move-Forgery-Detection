@@ -1,7 +1,9 @@
-function [extrema,feature] = SIFT(img)
+function [ext_positions,feature] = SIFT(img)
+
 %% Pre-processing
 %%initial image
 tic
+%img=imread("monkey.jpeg");
 row=256;
 colum=256;
 img=imresize(img,[row,colum]);
@@ -344,12 +346,17 @@ end
 %%delete unsearchable points and add minor orientation points
 %%idx= kpori==0;
 %%kpori(idx)=[];
+ext_num_old=size(extrema,2);
 temp_extrema = [extrema;numkpori];
-ext_num=size(extrema,2);
+ext_num=sum(numkpori);
 extrema=zeros(5,ext_num);
+ext_positions=zeros(2,ext_num);
 cnt=1;
-for i=1:ext_num
+for i=1:ext_num_old
     for j=1:temp_extrema(5,i)
+        x=floor((temp_extrema(3,i)-1)/(n/(2^(temp_extrema(1,i)-2))))+1;
+        y=mod((temp_extrema(3,i)-1),m/(2^(temp_extrema(1,i)-2)))+1;
+        ext_positions(:,cnt)=[x;y];
         extrema(:,cnt)=[temp_extrema(1,i);temp_extrema(2,i);temp_extrema(3,i);temp_extrema(4,i);kpori(i,j)];
         cnt=cnt+1;
     end
@@ -443,6 +450,7 @@ for i=1:ext_num
 end
 index=find(sum(feature));
 feature=feature(:,index);
+ext_positions=ext_positions(:,index);
 toc
 
 end
