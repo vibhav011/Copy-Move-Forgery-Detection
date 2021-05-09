@@ -27,7 +27,7 @@ function [T, x0, inliers] = ransac(matches, N, k, beta)
         for i2 = 1:n
             x1(:,:) = matches(i2, 1, :);
             x2(:,:) = matches(i2, 2, :);
-            if norm(x1 - cur_T*x2 - cur_x0) < beta
+            if norm(x1 - cur_T*x2 - cur_x0) < beta || norm(x2 - cur_T*x1 - cur_x0) < beta
                 num_inliers = num_inliers + 1;
                 cur_inliers(num_inliers, 1, :) = matches(i2, 1, :);
                 cur_inliers(num_inliers, 2, :) = matches(i2, 2, :);

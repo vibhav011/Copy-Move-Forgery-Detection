@@ -1,4 +1,4 @@
-function [map] = correlation_alternate(img,threshold)
+function [map] = correlation_alternate(img,threshold,transform)
 
 [row,col]=size(img);
 
@@ -8,7 +8,12 @@ img=padarray(img,[2,2],'replicate');
 
 for x=3:row+2
     for y=3:col+2 
-        [tx,ty]=transform(x,y);
+        x_ = round(transform([x;y]));
+        tx = x_(1);
+        ty = x_(2);
+        if tx < 3 || tx > row+2 || ty < 3 || ty > col+2
+            continue;
+        end
         num=0;
         den1=0;
         den2=0;
@@ -26,11 +31,10 @@ for x=3:row+2
         den=den1*den2;
         corr=num/den;
         if(corr>=threshold)
-            map(x,y)=1;
-            map(tx,ty)=1;
+            map(x-2,y-2)=1;
+            map(tx-2,ty-2)=1;
         end
     end
 end
 end
 
-end
