@@ -1,4 +1,4 @@
-function [map] = correlation_map(img,threshold)
+function [map] = correlation_alternate(img,threshold)
 
 [row,col]=size(img);
 
