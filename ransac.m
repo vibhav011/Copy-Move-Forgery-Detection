@@ -66,3 +66,4 @@ function [T, x0, inliers] = ransac(matches, N, k, beta)
     end
     
 end
+
