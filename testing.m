@@ -1,4 +1,4 @@
-% script for testing accuracy on rotated and copied patches 
+% script for testing accuracy on scaled and copied patches 
 clear;
 close all;
 clc;
