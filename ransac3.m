@@ -16,10 +16,11 @@ function [T, x0] = ransac3(img, matches, T1)
         ey=(T1*[0;1]);
         
         if abs(theta) < 0.0523
-            alpha=(norm(ex)+norm(ey))/2;
+            alpha=(norm(ex)+norm(ey))/2
         else
             alpha=1;
         end
+        
         T = alpha*T;
         
         A = zeros(k, 2);
@@ -34,8 +35,8 @@ function [T, x0] = ransac3(img, matches, T1)
         x0 = muA' - T * muB';
         
         if alpha > 1
-            T = T' ./ (alpha^2);
-            x0 = -T*x0;
+            T = T' ./ (alpha^2)
+            x0 = -T*x0
         end
         
 %         figure(56);
@@ -48,20 +49,20 @@ function [T, x0] = ransac3(img, matches, T1)
 %         hold off;
 %         
 %         plotting only - comment if not needed
-        figure(8);
-        imshow(img);
-        drawnow;
-        hold on;
-        
-        xFit1 = linspace(min(x1), max(x1), 1000);
-        yFit1 = polyval(coefficients1 , xFit1);
-        plot(xFit1, yFit1, 'r-', 'LineWidth', 2); % Plot fitted line.
-        
-        hold on;
-        
-        xFit2 = linspace(min(x2), max(x2), 1000);
-        yFit2 = polyval(coefficients2 , xFit2);
-        plot(xFit2, yFit2, 'b-', 'LineWidth', 2); % Plot fitted line.      
-        
-        hold off;
+%         figure(8);
+%         imshow(img);
+%         drawnow;
+%         hold on;
+%         
+%         xFit1 = linspace(min(x1), max(x1), 1000);
+%         yFit1 = polyval(coefficients1 , xFit1);
+%         plot(xFit1, yFit1, 'r-', 'LineWidth', 2); % Plot fitted line.
+%         
+%         hold on;
+%         
+%         xFit2 = linspace(min(x2), max(x2), 1000);
+%         yFit2 = polyval(coefficients2 , xFit2);
+%         plot(xFit2, yFit2, 'b-', 'LineWidth', 2); % Plot fitted line.      
+%         
+%         hold off;
 end

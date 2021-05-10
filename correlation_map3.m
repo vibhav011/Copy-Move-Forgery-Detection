@@ -1,10 +1,10 @@
-function [map1, map2] = correlation_map3(img, W, transform, sz)
+function [map1, map2] = correlation_map3(img, W, transform, sz, x_min, x_max, y_min, y_max)
 [row,col]=size(img);
 map1=zeros(row,col);
 map2=zeros(row,col);
 
-for x=1:row
-    for y=1:col
+for x=x_min:x_max
+    for y=y_min:y_max
         x_ = round(transform([x;y]));
         tx = x_(1);
         ty = x_(2);
