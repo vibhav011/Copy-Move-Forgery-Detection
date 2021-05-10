@@ -1,18 +1,14 @@
 clear;
 close all;
+rng(2);
 
 H=256;
 W=256;
-img_orig=imread('out_r-20_im8.bmp');
+img_orig=imread('images/out_s1.2_im9.bmp');
 [H_orig, W_orig, ~] = size(img_orig);
 % img = imresize(img_orig,[H,W]);
 % img2 = imresize(img, 2*[H, W]);
 img = im2single(rgb2gray(img_orig));
-
-s1 = W_orig/W;
-s2 = H_orig/H;
-s1 = 1;
-s2 = 1;
 
 [X, features] = vl_sift(img);
 X = round(X(1:2, :));
@@ -23,7 +19,7 @@ figure;
 imshow(img_orig);
 drawnow;
 hold on;
-scatter(X(2, :)*s1, X(1, :)*s2, 'r.');
+scatter(X(2, :), X(1, :), 'r.');
 hold off;
 
 pairs = PutativeMatching(X, features, 0.5, 5);
@@ -31,33 +27,46 @@ figure;
 imshow(img_orig);
 drawnow;
 hold on;
-plot(s1*[X(2,pairs(1,:)); X(2,pairs(2,:))], s2*[X(1,pairs(1,:)); X(1,pairs(2,:))], 'g');
+plot([X(2,pairs(1,:)); X(2,pairs(2,:))], [X(1,pairs(1,:)); X(1,pairs(2,:))], 'g');
 hold off;
 
 matches = zeros(size(pairs,2), 2, 2);
 matches(:, 1, :) = X(:,pairs(1,:))';
 matches(:, 2, :) = X(:,pairs(2,:))';
-[T, x0, inliers] = ransac(matches, 100, 3, 6);
+[T1, ~, inliers] = ransac(matches, 200, 3, 3);
 figure;
 imshow(img_orig);
 drawnow;
 hold on;
-plot(s1*[inliers(:, 1, 2)'; inliers(:, 2, 2)'], s2*[inliers(:, 1, 1)'; inliers(:, 2, 1)'], 'g');
+plot([inliers(:, 1, 2)'; inliers(:, 2, 2)'], [inliers(:, 1, 1)'; inliers(:, 2, 1)'], 'g');
 hold off;
- 
+
+[T, x0] = ransac3(img, inliers, T1);
+
+
+% [U,S,V] = svd(T);
+% S = mean([S(1,1) S(2,2)])*eye(2);
+% T = U*S*V';
+
+% T = [0.9505 -0.3409; 0.3596 0.9362];
+
 Tr = @(x) T*x+x0;
-tform = affine2d([T(:,1)' 0;
-                  T(:,2)' 0;
-                  x0' 1]);
-W = imwarp(img, tform);
-figure;
-imshow(img);
+tform = affine2d([T(2,2) T(1,2) 0;
+                  T(2,1) T(1,1) 0;
+                  x0(2) x0(1) 1]);
+
+
+W = imwarp(img, tform, 'OutputView',imref2d(size(img)));
+% figure;
+% imshow(img);
 figure;
 imshow(W);
 % map = correlation_map(img,0.999, Tr);
 % map = correlation_map2(img,0.7, Tr, 3);
-% new_img = zeros(H_orig, W_orig);
-% new_img(map == 1) = 255;
-% new_img(map == 2) = 128;
-% figure;
-% imshow(uint8(new_img));
+[map1, map2] = correlation_map3(img,W, Tr, 2);
+mask1 = location(map1, 0.9, 0.9);
+mask2 = location(map2, 0.9, 0.9);
+mask = min(mask1+mask2, 1);
+
+figure;
+imshow(mask);

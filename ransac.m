@@ -2,6 +2,7 @@ function [T, x0, inliers] = ransac(matches, N, k, beta)
     T = zeros(2, 2);
     A = zeros(k, 2);
     B = zeros(k, 2);
+    temp = zeros(1, 2);
     x0 = zeros(2, 1);
     x1 = zeros(2, 1);
     x2 = zeros(2, 1);
@@ -12,7 +13,16 @@ function [T, x0, inliers] = ransac(matches, N, k, beta)
         ids = randsample(n, k);
         
         A(:,:) = matches(ids, 1, :); % feature vectors of a set of k keypoints 
-        B(:,:) = matches(ids, 2, :); % feature vectors of a the set of matches of the above k keypoints 
+        B(:,:) = matches(ids, 2, :); % feature vectors of a the set of matches of the above k keypoints
+        
+        for i2 = 2:k
+            if (A(1,:)-B(1,:))*(A(i2,:)-B(i2,:))' < 0
+                temp = A(i2,:);
+                A(i2,:) = B(i2,:);
+                B(i2,:) = temp;
+            end
+        end
+        
         muA = mean(A, 1); 
         muB = mean(B, 1);
         
@@ -34,11 +44,24 @@ function [T, x0, inliers] = ransac(matches, N, k, beta)
             end
         end
         
-        if num_inliers > best_matched  % if present estimate gives more inliers than the best estimate till now, its results are recorded and values are updated 
+        if num_inliers >= best_matched  % if present estimate gives more inliers than the best estimate till now, its results are recorded and values are updated 
             best_matched = num_inliers;
             inliers = cur_inliers(1:num_inliers, :, :);
             T = cur_T;
             x0 = cur_x0;
+        end
+    end
+    
+    ik = size(inliers,1);
+    A = zeros(ik,2);
+    B = zeros(ik,2);
+    A(:,:) = inliers(:,1,:);
+    B(:,:) = inliers(:,2,:);
+    for i2 = 2:ik
+        if (A(1,:)-B(1,:))*(A(i2,:)-B(i2,:))' < 0
+            temp = inliers(i2,1,:);
+            inliers(i2,1,:) = inliers(i2,2,:);
+            inliers(i2,2,:) = temp;
         end
     end
     

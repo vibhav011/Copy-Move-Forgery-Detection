@@ -1,19 +1,31 @@
-function mask=location(map,c)
+function mask=location(map, c1, c2)
     [row, col] = size(map);
+    
+    idx = (map>c1); % the pixels with value > c are marked 1, others marked 0
+    map(idx) = 1;
+    idx = (map~=1);
+    map(idx) = 0;
+
     
     % filtering image with a 7x7 gaussian o remove noise
     kernel = fspecial('gaussian', [7 7], 1.6);
     mask = imfilter(map, kernel);
-    figure;
-    imshow(mask);
-    idx = (mask>c); % the pixels with value > c are marked 1, others marked 0
+%     figure;
+%     imshow(mask);
+    idx = (mask>c2); % the pixels with value > c are marked 1, others marked 0
     mask(idx) = 1;
-    idx = mask~=1;
+    idx = (mask~=1);
     mask(idx) = 0;
     
+%     figure;
+%     imshow(mask);
+%     drawnow;
+    
     % removing point clusters having area < 0.1 percent of *(total area)
-    area_thresh = floor(0.001*(row*col));
+    area_thresh = floor(0.01*(row*col));
     mask = bwareaopen(mask,area_thresh);
+%     figure;
+%     imshow(mask);
     
     % smoothing out the binary regions  in the mask
     [x,y] = find(mask ==1);
@@ -23,5 +35,8 @@ function mask=location(map,c)
     idx = inpolygon(X(:),Y(:),y(idx),x(idx)) ;
     I1(idx) = 1;
     mask = I1;
+%     figure;
+%     imshow(mask);
+%     drawnow;
     
 end
