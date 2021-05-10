@@ -1,17 +1,5 @@
 function [ext_positions,feature] = SIFT(img, row, colum)
-
-%% Pre-processing
-%%initial image
-% tic
-%img=imread("monkey.jpeg");
-
-% img=imresize(img,[row,colum]);
-% img=rgb2gray(img);
-% img=histeq(img);
-% img=im2double(img);
-% origin=img;
-% img=medfilt2(img);
-% toc
+% returns the co-ordinates of the key-points (ext_positions) and the corresponding feature vectors (feature)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
