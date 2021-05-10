@@ -1,17 +1,27 @@
 function [T, x0] = ransac3(img, matches, T1)
         k = size(matches,1);
+        % coordinates of each patch 
         x1 = matches(:, 1, 2);  
         y1 = matches(:, 1, 1);
         x2 = matches(:, 2, 2);  
         y2 = matches(:, 2, 1);
+        
+        % best fit line for the two patches 
         coefficients1 = polyfit(x1, y1, 1);
         coefficients2 = polyfit(x2, y2, 1);
+        
+        % slopes of the best fit lines 
         m1 = coefficients1(1,1);
         m2 = coefficients2(1,1);
+        
+        % calculating the angle between the best fit line of the patches 
         m = (m1-m2)/(1+m1*m2);
         theta = atan(m);
+        
+        % rotation matrix 
         T = [cos(theta) -sin(theta); sin(theta) cos(theta)]';
         
+        % scaling factor decision 
         ex=(T1*[1;0]);
         ey=(T1*[0;1]);
         
@@ -21,8 +31,10 @@ function [T, x0] = ransac3(img, matches, T1)
             alpha=1;
         end
         
+        % scaled rotation matrix
         T = alpha*T;
         
+        % imposing conversion from smaller patch to larger one in case of scaled images
         A = zeros(k, 2);
         B = zeros(k, 2);
         
@@ -34,9 +46,9 @@ function [T, x0] = ransac3(img, matches, T1)
         
         x0 = muA' - T * muB';
         
-        if alpha > 1
-            T = T' ./ (alpha^2)
-            x0 = -T*x0
+        if alpha > 1 
+            T = T' ./ (alpha^2) % if needed rotation matrix is inverted and scaled down instead of up
+            x0 = -T*x0 % translation factor is made negative 
         end
         
 %         figure(56);
