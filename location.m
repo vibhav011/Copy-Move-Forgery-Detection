@@ -1,5 +1,7 @@
 function [mask, idx]=location(map, c2)
     [row, col] = size(map);
+    
+    % lines corresponding to figures can be commented out to monitor progress and detect errors, if any 
 
     % filtering image with a 7x7 gaussian o remove noise
     kernel = fspecial('gaussian', [7 7], 1.6);
@@ -7,7 +9,7 @@ function [mask, idx]=location(map, c2)
 
 %     figure;
 %     imshow(mask);
-    idx = (mask>c2); % the pixels with value > c are marked 1, others marked 0
+    idx = (mask>c2); % the pixels with value > c2 are marked 1, others marked 0
     mask(idx) = 1;
     idx = (mask~=1);
     mask(idx) = 0;
@@ -26,8 +28,8 @@ function [mask, idx]=location(map, c2)
     [x,y] = find(mask ==1);
     I1 = zeros(row,col);
     [X,Y] = meshgrid(1:col,1:row) ;
-    idx2 = boundary(x,y) ;
-    idx = inpolygon(X(:),Y(:),y(idx2),x(idx2)) ;
+    idx2 = boundary(x,y) ; % boundary of masks found 
+    idx = inpolygon(X(:),Y(:),y(idx2),x(idx2)) ; % area within boundary filled 
     I1(idx) = 1;
     mask = I1;
 %     figure;
