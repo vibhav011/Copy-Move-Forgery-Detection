@@ -15,6 +15,7 @@ for i=1:n
     cur_l = 0;
     for j=1:num_nbrs
         l = IdxKDT(i, j);
+        % only points within a window of (2*offset+1)*(2*offset+1) centred at the pixel under consideration, are taken
         if abs(X(1, l)-X(1, i)) <= offset && abs(X(2, l)-X(2, i)) <= offset
             continue;
         end
@@ -23,7 +24,7 @@ for i=1:n
             cur_l = l;
         else
             if norm(features(:, cur_l) - features(:, i)) < epsilon*norm(features(:, l) - features(:, i))
-                pairs = [pairs [i; cur_l]];
+                pairs = [pairs [i; cur_l]]; % if shortest distance is less than epsilon times all the other distances, added to the list of pairs
             end
             break;
         end
