@@ -1,3 +1,4 @@
+% script for testing accuracy on rotated and copied patches 
 clear;
 close all;
 clc;
@@ -12,18 +13,13 @@ for k=1:kmax
     img="Dataset1/im"+k+"/out_s"+scales(u)+"_im"+k+".bmp"
     image = imread(img);
     [r,c,~] = size(image);
-%     image = imresize(image,[256,256]);
-    %image=rgb2gray(img);
-    %image=im2double(img);
     mask = detect(image);
-%     mask = imresize(mask,[256,256]);
     mask_im="Dataset1/im"+k+"/out_s"+scales(u)+"_im"+k+"_mask.bmp";
     ref_mask=imread(mask_im);
     imwrite(ref_mask, "generated2/mask_"+k+".bmp");
-%     ref_mask = imresize(ref_mask,[256,256]);
-    estimation_accuracy(k)= sum((ref_mask-mask).^2, 'all') / (r*c);
+    estimation_accuracy(k)= sum((ref_mask-mask).^2, 'all') / (r*c); % fraction of mismatched points b/w reference mask and the mask produced by this algorithm 
 end
 figure;
-semilogy(estimation_accuracy, 'b.-');
-figure;
-histogram(estimation_accuracy);
+semilogy(estimation_accuracy, 'b.-'); % log scale plots of fraction of mismatched points for each image  
+figure; 
+histogram(estimation_accuracy);  % histogram of fraction of mismatched points for each image
