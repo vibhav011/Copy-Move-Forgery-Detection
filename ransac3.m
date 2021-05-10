@@ -16,7 +16,7 @@ function [T, x0] = ransac3(img, matches, T1)
         ey=(T1*[0;1]);
         
         if abs(theta) < 0.0523
-            alpha=(norm(ex)+norm(ey))/2
+            alpha=(norm(ex)+norm(ey))/2;
         else
             alpha=1;
         end
@@ -32,11 +32,20 @@ function [T, x0] = ransac3(img, matches, T1)
         muA = mean(A, 1); 
         muB = mean(B, 1);
         
-        x0 = muA' - T * muB';
+        x01 = muA' - T * muB';
+        x02 = muB' - T * muA';
+        
+        tr1 = T*A' + x02;
+        tr2 = T*B' + x01;
+        
+        x0 = x01;
+        if sum(vecnorm(tr1-B')) < sum(vecnorm(tr2-A'))
+            x0 = x02;
+        end
         
         if alpha > 1
-            T = T' ./ (alpha^2)
-            x0 = -T*x0
+            T = T' ./ (alpha^2);
+            x0 = -T*x0;
         end
         
 %         figure(56);

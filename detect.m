@@ -32,22 +32,18 @@ matches = zeros(size(pairs,2), 2, 2);
 matches(:, 1, :) = X(:,pairs(1,:))';
 matches(:, 2, :) = X(:,pairs(2,:))';
 [T1, ~, inliers] = ransac(matches, 200, 3, 3);
+
 % figure;
 % imshow(img_orig);
 % drawnow;
 % hold on;
-% plot([inliers(:, 1, 2)'; inliers(:, 2, 2)'], [inliers(:, 1, 1)'; inliers(:, 2, 1)'], 'g');
+% % plot([inliers(:, 1, 2)'; inliers(:, 2, 2)'], [inliers(:, 1, 1)'; inliers(:, 2, 1)'], 'g');
+% scatter(inliers(:,1,2), inliers(:,1,1), 'r.');
+% hold on;
+% scatter(inliers(:,2,2), inliers(:,2,1), 'b.');
 % hold off;
 
 [T, x0] = ransac3(img, inliers, T1);
-% [theta, alpha, p, q] = ransac4(inliers, T1);
-% alpha = 1;
-
-% [U,S,V] = svd(T);
-% S = mean([S(1,1) S(2,2)])*eye(2);
-% T = U*S*V';
-
-% T = [0.9505 -0.3409; 0.3596 0.9362];
 
 Tr = @(x) T*x+x0;
 tform = affine2d([T(2,2) T(1,2) 0;
@@ -81,16 +77,16 @@ y_max = min(W_orig, y_max+2*diff_y);
 W = imwarp(img, tform, 'OutputView',imref2d(size(img)));
 % % figure;
 % % imshow(img);
-figure;
-imshow(W);
+% figure;
+% imshow(W);
 % % map = correlation_map(img,0.999, Tr);
 % map = correlation_map2(img,0.7, Tr, 3);
 % [map1, map2] = correlation_map3(img,W, Tr, 2, 1, H_orig, 1, W_orig);
 [map1, map2] = correlation_map3(img,W, Tr, 2, x_min, x_max, y_min, y_max);
 % [map1, map2] = correlation_map4(img, theta, alpha, p, q, 2, 0.9);
 
-[mask1, idx1] = location(map1, 0.5);
-[mask2, idx2] = location(map2, 0.5);
+[mask1, idx1] = location(map1, 0.45);
+[mask2, idx2] = location(map2, 0.45);
 out_mask = min(mask1+mask2, 1);
 
 % figure;

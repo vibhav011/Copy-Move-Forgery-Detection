@@ -1,10 +1,10 @@
 clear;
 close all;
-rng(4);
+rng(5);
 
 H=256;
 W=256;
-img_orig=imread('images/im3_t.bmp');
+img_orig=imread('Dataset1/im6/out_s0.8_im6.bmp');
 [H_orig, W_orig, ~] = size(img_orig);
 % img = imresize(img_orig,[H,W]);
 % img2 = imresize(img, 2*[H, W]);
@@ -22,7 +22,7 @@ hold on;
 scatter(X(2, :), X(1, :), 'r.');
 hold off;
 
-pairs = PutativeMatching(X, features, 0.7, 5);
+pairs = PutativeMatching(X, features, 0.6, 5);
 figure;
 imshow(img_orig);
 drawnow;
@@ -81,8 +81,8 @@ imshow(W);
 % [map1, map2] = correlation_map3(img,W, Tr, 2, 1, H_orig, 1, W_orig);
 [map1, map2] = correlation_map3(img,W, Tr, 2, x_min, x_max, y_min, y_max);
 
-[mask1, idx1] = location(map1, 0.9);
-[mask2, idx2] = location(map2, 0.9);
+[mask1, idx1] = location(map1, 0.8);
+[mask2, idx2] = location(map2, 0.8);
 mask = min(mask1+mask2, 1);
 
 figure;
