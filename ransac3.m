@@ -14,7 +14,12 @@ function [T, x0] = ransac3(img, matches, T1)
         
         ex=(T1*[1;0]);
         ey=(T1*[0;1]);
-        alpha=(norm(ex)+norm(ey))/2;
+        
+        if abs(theta) < 0.0523
+            alpha=(norm(ex)+norm(ey))/2;
+        else
+            alpha=1;
+        end
         T = alpha*T;
         
         A = zeros(k, 2);

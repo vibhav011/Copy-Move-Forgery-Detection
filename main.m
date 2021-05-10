@@ -1,10 +1,10 @@
 clear;
 close all;
-rng(2);
+rng(3);
 
 H=256;
 W=256;
-img_orig=imread('images/out_s1.2_im9.bmp');
+img_orig=imread('images/out_r-4_im15.bmp');
 [H_orig, W_orig, ~] = size(img_orig);
 % img = imresize(img_orig,[H,W]);
 % img2 = imresize(img, 2*[H, W]);
@@ -42,7 +42,8 @@ plot([inliers(:, 1, 2)'; inliers(:, 2, 2)'], [inliers(:, 1, 1)'; inliers(:, 2, 1
 hold off;
 
 [T, x0] = ransac3(img, inliers, T1);
-
+% [theta, alpha, p, q] = ransac4(inliers, T1);
+% alpha = 1;
 
 % [U,S,V] = svd(T);
 % S = mean([S(1,1) S(2,2)])*eye(2);
@@ -54,18 +55,20 @@ Tr = @(x) T*x+x0;
 tform = affine2d([T(2,2) T(1,2) 0;
                   T(2,1) T(1,1) 0;
                   x0(2) x0(1) 1]);
-
-
+% 
+% 
 W = imwarp(img, tform, 'OutputView',imref2d(size(img)));
-% figure;
-% imshow(img);
+% % figure;
+% % imshow(img);
 figure;
 imshow(W);
 % map = correlation_map(img,0.999, Tr);
 % map = correlation_map2(img,0.7, Tr, 3);
 [map1, map2] = correlation_map3(img,W, Tr, 2);
-mask1 = location(map1, 0.9, 0.9);
-mask2 = location(map2, 0.9, 0.9);
+% [map1, map2] = correlation_map4(img, theta, alpha, p, q, 2, 0.9);
+
+[mask1, idx1] = location(map1, 0.75, 0.45);
+[mask2, idx2] = location(map2, 0.75, 0.45);
 mask = min(mask1+mask2, 1);
 
 figure;
